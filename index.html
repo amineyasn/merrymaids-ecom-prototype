@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -271,6 +272,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 .mob-bar .mb-sub{font-size:0.67rem;color:var(--sub)}
 .mob-cta{background:var(--g);color:white;border:none;border-radius:6px;padding:13px 22px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.92rem;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:background 0.15s}
 .mob-cta:hover{background:var(--g2)}
+.mob-back{background:none;border:1.5px solid var(--border);border-radius:6px;padding:13px 14px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.92rem;color:var(--sub);cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;transition:all 0.15s;display:none}
+.mob-back:hover{border-color:var(--g);color:var(--g)}
 
 /* PKG INFO MODAL */
 .pkg-info-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:center;justify-content:center;padding:20px}
@@ -294,6 +297,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
   .main{grid-template-columns:1fr;padding:20px 16px 110px;gap:16px}
   .price-panel{display:none}
   .mob-bar{display:flex}
+  .step-nav{display:none}
 }
 @media(max-width:580px){
   .freq-row{grid-template-columns:repeat(2,1fr);gap:10px}
@@ -502,9 +506,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
         </div>
       </div>
 
-      <!-- PACKAGE -->
+      <!-- FIRST VISIT OPTIONS: Package + Add-ons -->
       <div class="card">
-        <div class="card-title">✨ Cleaning package</div>
+        <div class="card-title">✨ First visit options</div>
+        <p style="font-size:0.78rem;color:var(--sub);margin-bottom:14px;line-height:1.5;margin-top:-8px;">Your cleaning package and add-ons apply to your <strong>first visit only</strong>. Recurring visits use our Standard clean rate.</p>
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--sub);margin-bottom:8px;">Cleaning package</div>
         <div class="pkg-row">
           <div class="pkg-card sel" id="pkg-standard" onclick="setPkg('standard')">
             <div class="pkg-card-body">
@@ -531,11 +537,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- ADD-ONS -->
-      <div class="card">
-        <div class="card-title">➕ <span id="addons-title">First visit add-ons</span> <span style="font-size:0.75rem;font-weight:400;color:var(--sub);margin-left:4px;">optional</span></div>
+        <div style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--sub);margin-top:18px;margin-bottom:8px;"><span id="addons-title">First visit add-ons</span> <span style="font-weight:400;text-transform:none;letter-spacing:0;">— optional</span></div>
         <div class="addon-grid">
           <button class="addon-btn" data-price="50" data-addon="fridge" onclick="toggleAddon(this)">
             <span class="ai">🧊</span>
@@ -548,14 +551,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
             <div class="ck">✓</div>
           </button>
         </div>
-      </div>
+      </div><!-- /first-visit-options card -->
 
       <!-- MOBILE PRICE BREAKDOWN -->
       <div class="card mob-price-card" id="mob-breakdown-card" style="display:none;">
         <div class="card-title">💰 Your estimate</div>
         <div id="mob-bd-placeholder" class="mob-bd-placeholder">Select your home size and rooms above to see pricing.</div>
         <div id="mob-bd-full" style="display:none;">
-          <div class="mob-bd-row"><span class="mob-bd-lbl">Base visit</span><span class="mob-bd-val" id="mob-bd-base">—</span></div>
+          <div class="mob-bd-row"><span class="mob-bd-lbl" id="mob-bd-base-label">Recurring clean price</span><span class="mob-bd-val" id="mob-bd-base">—</span></div>
+          <div class="mob-bd-row" id="mob-bd-first-visit-fee" style="display:none;"><span class="mob-bd-lbl">First visit fee (Detailed)</span><span class="mob-bd-val" id="mob-bd-first-visit-fee-val">—</span></div>
           <div class="mob-bd-row" id="mob-bd-addon-fridge" style="display:none;"><span class="mob-bd-lbl">Deep fridge clean</span><span class="mob-bd-val">+$50</span></div>
           <div class="mob-bd-row" id="mob-bd-addon-oven" style="display:none;"><span class="mob-bd-lbl">Oven deep clean</span><span class="mob-bd-val">+$50</span></div>
           <div class="mob-bd-total">
@@ -680,7 +684,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 
         <div class="step-nav">
           <button class="btn-back" onclick="goStep(3)">← Back</button>
-          <button class="btn-next" onclick="submitRequest()">Submit my request →</button>
+          <button class="btn-next" onclick="submitRequest()">Schedule now →</button>
         </div>
       </div>
     </div>
@@ -702,7 +706,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
           <div class="pc-placeholder"><span class="big">🏡</span>Select your home size and number of rooms to see your instant price.</div>
         </div>
         <div id="pc-full" style="display:none;">
-          <div class="pc-line"><span class="ll">Base visit</span><span class="lv" id="pl-base">—</span></div>
+          <div class="pc-line"><span class="ll" id="pl-base-label">Recurring clean price</span><span class="lv" id="pl-base">—</span></div>
+          <div class="pc-line" id="pl-first-visit-fee" style="display:none;"><span class="ll">First visit fee <span style="font-size:0.68rem;color:var(--sub)">(Detailed)</span></span><span class="lv" id="pl-first-visit-fee-val">—</span></div>
           <div class="pc-line" id="pl-addon-fridge" style="display:none;"><span class="ll">Deep fridge clean</span><span class="lv">+$50</span></div>
           <div class="pc-line" id="pl-addon-oven" style="display:none;"><span class="ll">Oven deep clean</span><span class="lv">+$50</span></div>
           <div class="pc-total"><span class="ll" id="pl-total-label">First visit total</span><span class="lv" id="pl-total">—</span></div>
@@ -728,6 +733,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
     <div id="mob-price-wrap"><div class="mb-price">$<span id="mob-price">—</span></div></div>
     <div class="mb-sub" id="mob-sub">Select size &amp; rooms above</div>
   </div>
+  <button class="mob-back" id="mob-back-btn" onclick="handleMobBack()">← Back</button>
   <button class="mob-cta" id="mob-cta-btn" onclick="handleMobCta()">Continue →</button>
 </div>
 
@@ -794,10 +800,12 @@ function updateStepIndicator(n) {
 function updateMobBar(n) {
   const lbl = document.getElementById('mob-lbl');
   const cta = document.getElementById('mob-cta-btn');
-  if (n === 1) { lbl.textContent = 'Step 1 of 4'; cta.textContent = 'Continue →'; cta.onclick = () => goStep(2); }
-  else if (n === 2) { lbl.textContent = 'Step 2 of 4'; cta.textContent = 'Continue →'; cta.onclick = () => { if(S.isOver4k) goCustomQuote(); else goStep(3); }; }
-  else if (n === 3) { lbl.textContent = 'Step 3 of 4'; cta.textContent = 'Review Summary →'; cta.onclick = () => goStep(4); }
-  else if (n === 4) { lbl.textContent = 'Final step'; cta.textContent = 'Submit →'; cta.onclick = submitRequest; }
+  const back = document.getElementById('mob-back-btn');
+  back.style.display = n > 1 ? 'block' : 'none';
+  if (n === 1) { lbl.textContent = 'Step 1 of 4'; cta.textContent = 'Continue →'; cta.onclick = () => goStep(2); back.onclick = null; }
+  else if (n === 2) { lbl.textContent = 'Step 2 of 4'; cta.textContent = 'Continue →'; cta.onclick = () => { if(S.isOver4k) goCustomQuote(); else goStep(3); }; back.onclick = () => goStep(1); }
+  else if (n === 3) { lbl.textContent = 'Step 3 of 4'; cta.textContent = 'Review Summary →'; cta.onclick = () => goStep(4); back.onclick = () => goStep(2); }
+  else if (n === 4) { lbl.textContent = 'Final step'; cta.textContent = 'Schedule now →'; cta.onclick = submitRequest; back.onclick = () => goStep(3); }
 }
 
 // ── STEP 1 VALIDATION ──
@@ -994,9 +1002,13 @@ function calcPrice() {
   const extraCount = Object.values(S.extraRooms).reduce((a,b)=>a+b,0);
   base += extraCount*12;
   base += Math.round(S.sqft/500)*10;
-  base = Math.round(base*({standard:1,detailed:1.28}[S.pkg]||1));
-  base = Math.round(base*({weekly:0.78,biweekly:0.88,monthly:1,onetime:1.18}[S.freq]||1));
-  return {base, total:base+S.addons, recurring:base};
+  // Frequency multiplier gives the base clean price
+  const freqMult = {weekly:0.78,biweekly:0.88,monthly:1,onetime:1.18}[S.freq]||1;
+  const visitBase = Math.round(base * freqMult);
+  // First visit fee: always shown separately when Detailed is selected
+  const firstVisitFee = S.pkg==='detailed' ? Math.round(visitBase * 0.28) : 0;
+  const total = visitBase + firstVisitFee + S.addons;
+  return {visitBase, firstVisitFee, total};
 }
 
 function recalc() {
@@ -1015,15 +1027,20 @@ function recalc() {
   }
   const p = calcPrice();
   document.getElementById('pc-dollar').style.display='';
-  document.getElementById('pc-num').textContent=p.base;
+  document.getElementById('pc-num').textContent=p.total;
   animatePop();
   const fLbl={weekly:'weekly',biweekly:'every 2 weeks',monthly:'monthly',onetime:'one-time'};
   document.getElementById('pc-sub').textContent='per visit · '+(fLbl[S.freq]||'');
-  document.getElementById('pl-base').textContent='$'+p.base;
   const isOnetime = S.freq==='onetime';
+  document.getElementById('pl-base-label').textContent = isOnetime ? 'One time cleaning price' : 'Recurring clean price';
+  document.getElementById('pl-base').textContent='$'+p.visitBase;
+  const fvFeeEl = document.getElementById('pl-first-visit-fee');
+  const fvFeeVal = document.getElementById('pl-first-visit-fee-val');
+  if (p.firstVisitFee > 0) { fvFeeEl.style.display='flex'; fvFeeVal.textContent='+$'+p.firstVisitFee; }
+  else { fvFeeEl.style.display='none'; }
   document.getElementById('pl-total-label').textContent = isOnetime ? 'Visit total' : 'First visit total';
   document.getElementById('pl-total').textContent='$'+p.total;
-  document.getElementById('pl-recurring').textContent=p.recurring;
+  document.getElementById('pl-recurring').textContent=p.visitBase;
   const recurNote = document.getElementById('pc-recurring-note');
   if (recurNote) recurNote.style.display = isOnetime?'none':'';
   ['fridge','oven'].forEach(key => {
@@ -1041,7 +1058,12 @@ function recalc() {
   document.getElementById('mob-sub').textContent=(pkgN[S.pkg]||'')+' · '+(fS[S.freq]||'');
   document.getElementById('mob-bd-placeholder').style.display='none';
   document.getElementById('mob-bd-full').style.display='block';
-  document.getElementById('mob-bd-base').textContent='$'+p.base;
+  document.getElementById('mob-bd-base-label').textContent = isOnetime ? 'One time cleaning price' : 'Recurring clean price';
+  document.getElementById('mob-bd-base').textContent='$'+p.visitBase;
+  const mobFvFee = document.getElementById('mob-bd-first-visit-fee');
+  const mobFvFeeVal = document.getElementById('mob-bd-first-visit-fee-val');
+  if (p.firstVisitFee > 0) { mobFvFee.style.display='flex'; mobFvFeeVal.textContent='+$'+p.firstVisitFee; }
+  else { mobFvFee.style.display='none'; }
   document.getElementById('mob-bd-total-label').textContent = isOnetime?'Visit total':'First visit total';
   document.getElementById('mob-bd-total').textContent='$'+p.total;
   document.getElementById('mob-bd-recurring').textContent=p.recurring;
@@ -1101,10 +1123,11 @@ function buildSummary() {
 
   const isOnetime = S.freq==='onetime';
   document.getElementById('sum-price-rows').innerHTML = p ? `
-    <div class="summary-row"><span>Base visit</span><span>$${p.base}</span></div>
+    <div class="summary-row"><span>${isOnetime ? 'One time cleaning price' : 'Recurring clean price'}</span><span>$${p.visitBase}</span></div>
     ${S.addons ? `<div class="summary-row"><span>Add-ons</span><span>+$${S.addons}</span></div>` : ''}
     <div class="summary-total-row"><span>${isOnetime?'Visit total':'First visit total'}</span><span>$${p.total}</span></div>
-    ${!isOnetime ? `<div class="summary-row" style="margin-top:8px"><span>Recurring visits</span><span style="color:var(--g)">$${p.recurring}/visit</span></div>` : ''}
+    ${p.firstVisitFee ? `<div class="summary-row"><span>First visit fee (Detailed)</span><span>+$${p.firstVisitFee}</span></div>` : ''}
+    ${!isOnetime ? `<div class="summary-row" style="margin-top:8px"><span>Recurring clean price</span><span style="color:var(--g)">$${p.visitBase}/visit</span></div>` : ''}
   ` : '<div class="summary-row"><span style="color:var(--sub);font-style:italic">Complete your home details to see pricing</span></div>';
 }
 
@@ -1122,7 +1145,7 @@ function submitRequest() {
   const params = new URLSearchParams({
     type:'standard', pkg:S.pkg, freq:S.freq,
     beds:S.beds, baths:S.baths, sqft:S.sqft,
-    total:p.total, recurring:p.recurring,
+    total:p.total, recurring:p.visitBase,
     name:document.getElementById('d-fname').value+' '+document.getElementById('d-lname').value,
     phone:document.getElementById('d-phone').value,
     email:document.getElementById('d-email').value,
