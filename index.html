@@ -96,18 +96,18 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:26px; h
 
 /* PACKAGE */
 .pkg-row { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
-.pkg-card { border:1.5px solid var(--border); border-radius:12px; background:var(--white); cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.13s; position:relative; -webkit-tap-highlight-color:transparent; overflow:hidden; }
+.pkg-card { border:1.5px solid var(--border); border-radius:10px; background:var(--white); cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.13s; -webkit-tap-highlight-color:transparent; }
 .pkg-card:hover { border-color:var(--g2); background:var(--gxpale); }
 .pkg-card.sel { border-color:var(--g); background:var(--gpale); }
-.pkg-card-body { padding:16px 14px 14px; display:flex; flex-direction:column; gap:6px; }
-.pkg-top { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
-.pkg-icon { font-size:1.5rem; line-height:1; }
-.pkg-info-btn { width:24px; height:24px; border-radius:50%; background:var(--border); border:none; color:var(--sub); font-size:0.72rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s; font-family:'DM Sans',sans-serif; -webkit-tap-highlight-color:transparent; }
-.pkg-info-btn:hover { background:var(--g); color:white; }
-.pkg-name { font-size:0.9rem; font-weight:700; color:var(--ink); }
+.pkg-card-body { padding:13px 14px; display:flex; align-items:flex-start; gap:10px; }
+.pkg-icon { font-size:1.3rem; flex-shrink:0; margin-top:1px; }
+.pkg-text { flex:1; }
+.pkg-top { display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:4px; }
+.pkg-name { font-size:0.88rem; font-weight:700; color:var(--ink); }
 .pkg-card.sel .pkg-name { color:var(--g); }
-.pkg-desc { font-size:0.72rem; color:var(--sub); line-height:1.5; }
-.pkg-pop { display:inline-block; background:var(--g); color:white; font-size:0.57rem; font-weight:700; padding:2px 8px; border-radius:20px; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:2px; align-self:flex-start; }
+.pkg-info-btn { width:22px; height:22px; border-radius:50%; background:var(--border); border:none; color:var(--sub); font-size:0.68rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s; font-family:'DM Sans',sans-serif; -webkit-tap-highlight-color:transparent; }
+.pkg-info-btn:hover { background:var(--g); color:white; }
+.pkg-desc { font-size:0.71rem; color:var(--sub); line-height:1.45; }
 
 /* ADD-ONS */
 .addon-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
@@ -193,10 +193,6 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:26px; h
 .er-stepper button { width:28px; height:28px; border-radius:8px; background:var(--gpale); border:none; font-size:1rem; color:var(--g); cursor:pointer; font-weight:700; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; transition:background 0.1s; }
 .er-stepper button:active { background:var(--g); color:white; }
 .er-stepper .er-val { width:24px; text-align:center; font-size:0.85rem; font-weight:700; color:var(--ink); }
-
-/* PKG INFO BUTTON */
-.pkg-info-btn { position:absolute; top:10px; right:10px; width:22px; height:22px; border-radius:50%; background:var(--gpale); border:none; color:var(--g); font-size:0.7rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:2; -webkit-tap-highlight-color:transparent; transition:background 0.15s; font-family:'DM Sans',sans-serif; }
-.pkg-info-btn:hover { background:var(--g); color:white; }
 
 /* PKG INFO MODAL */
 .pkg-info-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:200; align-items:center; justify-content:center; padding:20px; }
@@ -426,23 +422,26 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:26px; h
       <div class="pkg-row">
         <div class="pkg-card sel" id="pkg-standard" onclick="setPkg('standard')">
           <div class="pkg-card-body">
-            <div class="pkg-top">
-              <span class="pkg-icon">🧹</span>
-              <button class="pkg-info-btn" onclick="showPkgInfo('standard',event)" title="See what's included">ℹ</button>
+            <span class="pkg-icon">🧹</span>
+            <div class="pkg-text">
+              <div class="pkg-top">
+                <span class="pkg-name">Standard</span>
+                <button class="pkg-info-btn" onclick="showPkgInfo('standard',event)" title="See what's included">ℹ</button>
+              </div>
+              <span class="pkg-desc">Reliable, high-quality cleaning to keep your living spaces fresh and healthy.</span>
             </div>
-            <span class="pkg-name">Standard</span>
-            <span class="pkg-desc">Reliable, high-quality cleaning to keep your living spaces fresh and healthy.</span>
           </div>
         </div>
         <div class="pkg-card" id="pkg-detailed" onclick="setPkg('detailed')">
           <div class="pkg-card-body">
-            <div class="pkg-top">
-              <span class="pkg-icon">🌟</span>
-              <button class="pkg-info-btn" onclick="showPkgInfo('detailed',event)" title="See what's included">ℹ</button>
+            <span class="pkg-icon">🌟</span>
+            <div class="pkg-text">
+              <div class="pkg-top">
+                <span class="pkg-name">Detailed</span>
+                <button class="pkg-info-btn" onclick="showPkgInfo('detailed',event)" title="See what's included">ℹ</button>
+              </div>
+              <span class="pkg-desc">An intensive, top-to-bottom scrub targeting deep-seated dirt and neglected spaces.</span>
             </div>
-            <span class="pkg-pop">Popular</span>
-            <span class="pkg-name">Detailed</span>
-            <span class="pkg-desc">An intensive, top-to-bottom scrub targeting deep-seated dirt and neglected spaces.</span>
           </div>
         </div>
       </div>
