@@ -1145,8 +1145,8 @@ function recalc() {
   document.getElementById('pc-dollar').style.display='';
   document.getElementById('pc-num').textContent=p.total;
   animatePop();
-  const fLbl={weekly:'weekly',biweekly:'every 2 weeks',monthly:'monthly',onetime:'one-time'};
-  document.getElementById('pc-sub').textContent='per visit · '+(fLbl[S.freq]||'');
+  const fLbl={weekly:'weekly',biweekly:'every 2 weeks',monthly:'monthly'};
+  document.getElementById('pc-sub').textContent= S.freq==='onetime' ? 'One-time fee' : 'per visit · '+(fLbl[S.freq]||'');
   const isOnetime = S.freq==='onetime';
   document.getElementById('pl-base-label').textContent = isOnetime ? 'One time cleaning price' : 'Recurring clean price';
   document.getElementById('pl-base').textContent='$'+p.visitBase;
