@@ -377,6 +377,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
   .cq-body{padding:18px 18px 26px}
   .cq-head{padding:18px 18px 14px}
 }
+
+/* PRICE SPINNER */
+.pc-head{position:relative}
+.pc-spinner-wrap{position:absolute;inset:0;background:#7AC143;display:none;align-items:center;justify-content:center;z-index:5}
+.pc-spinner-wrap.show{display:flex}
+.pc-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.mob-spinner{display:none;width:14px;height:14px;border:2px solid rgba(26,94,58,0.2);border-top-color:var(--g);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-left:6px}
+.mob-spinner.show{display:inline-block}
 </style>
 </head>
 <body>
@@ -505,19 +514,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
             </div>
           </div>
           <div class="detail-field">
-            <label>Kitchen</label>
+            <label>Half Baths</label>
             <div class="stepper">
-              <button onclick="adj('kitchen',-1)">−</button>
-              <div class="val" id="kitchen-val">—</div>
-              <button onclick="adj('kitchen',1)">+</button>
-            </div>
-          </div>
-          <div class="detail-field">
-            <label>Living Room</label>
-            <div class="stepper">
-              <button onclick="adj('living',-1)">−</button>
-              <div class="val" id="living-val">—</div>
-              <button onclick="adj('living',1)">+</button>
+              <button onclick="adj('halfBaths',-1)">−</button>
+              <div class="val" id="halfBaths-val">—</div>
+              <button onclick="adj('halfBaths',1)">+</button>
             </div>
           </div>
         </div>
@@ -772,6 +773,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
   <div class="price-panel" id="price-panel">
     <div class="price-card">
       <div class="pc-head">
+        <div class="pc-spinner-wrap" id="pc-spinner"><div class="pc-spinner"></div></div>
         <div class="eyebrow">Your live estimate</div>
         <div class="pc-price" id="pc-price">
           <sup id="pc-dollar" style="display:none">$</sup><span id="pc-num">—</span>
@@ -807,7 +809,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 <div class="mob-bar" id="mob-bar">
   <div class="mb-left">
     <div class="mb-lbl" id="mob-lbl">First visit estimate</div>
-    <div id="mob-price-wrap"><div class="mb-price">$<span id="mob-price">—</span></div></div>
+    <div id="mob-price-wrap"><div class="mb-price">$<span id="mob-price">—</span><span class="mob-spinner" id="mob-spinner"></span></div></div>
     <div class="mb-sub" id="mob-sub">Select size &amp; rooms above</div>
   </div>
   <button class="mob-back" id="mob-back-btn" onclick="handleMobBack()">← Back</button>
@@ -828,16 +830,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 <script>
 // ── STATE ──
 const S = {
-  beds:0, baths:0, kitchen:0, living:0, pets:0, sqft:0,
+  beds:0, baths:0, halfBaths:0, pets:0, sqft:0,
   freq:'biweekly', pkg:'standard', addons:0, extraRooms:{},
   levels:1, sqftTouched:false, bedsTouched:false, isOver4k:false,
   selectedDate:null, selectedTime:null, contactPref:'email',
   currentStep:1
 };
-const DEFAULTS = { beds:3, baths:2, kitchen:1, living:1 };
-const LIMITS   = { beds:[1,10], baths:[1,10], kitchen:[1,4], living:[1,6] };
+const DEFAULTS = { beds:3, baths:2, halfBaths:0 };
+const LIMITS   = { beds:[1,10], baths:[1,10], halfBaths:[0,6] };
 
 const EXTRA_ROOMS = [
+  {key:'kitchen',icon:'🍳',name:'Kitchen'},
+  {key:'living',icon:'🛋️',name:'Living Room'},
   {key:'office',icon:'🖥️',name:'Office / Library'},
   {key:'dining',icon:'🍽️',name:'Dining Room'},
   {key:'halfbath',icon:'🚿',name:'Half Bath'},
@@ -929,17 +933,17 @@ function adjExtra(key, d) {
   S.extraRooms[key] = Math.max(0, Math.min(6, (S.extraRooms[key]||0) + d));
   document.getElementById('erv-'+key).textContent = S.extraRooms[key];
   document.getElementById('er-'+key).classList.toggle('has-count', S.extraRooms[key] > 0);
-  recalc();
+  triggerRecalc();
 }
 function adjPets(d) {
   S.pets = Math.max(0, Math.min(8, S.pets + d));
   document.getElementById('pets-val').textContent = S.pets;
-  recalc();
+  triggerRecalc();
 }
 function adjLevels(d) {
   S.levels = Math.max(1, Math.min(4, S.levels + d));
   document.getElementById('levels-val').textContent = S.levels;
-  recalc();
+  triggerRecalc();
 }
 
 // ── STEPPERS ──
@@ -949,7 +953,7 @@ function adj(key, d) {
   S[key] = Math.max(mn, Math.min(mx, S[key]+d));
   document.getElementById(key+'-val').textContent = S[key];
   if (key==='beds') S.bedsTouched = true;
-  recalc();
+  triggerRecalc();
 }
 function initSteppers() {
   Object.entries(DEFAULTS).forEach(([k,v]) => {
@@ -967,7 +971,7 @@ function setSqft(v) {
   document.getElementById('over4k-btn').classList.remove('active');
   if (!S.bedsTouched) initSteppers();
   hideCustomMode();
-  recalc();
+  triggerRecalc();
 }
 function toggleOver4k() {
   S.isOver4k = !S.isOver4k;
@@ -975,7 +979,7 @@ function toggleOver4k() {
   if (S.isOver4k) {
     S.sqft = 4050; S.sqftTouched = true;
     if (!S.bedsTouched) initSteppers();
-    document.getElementById('sqft-slider').value = 4050;
+    document.getElementById('sqft-slider').value = 4000;
     document.getElementById('sqft-display').textContent = '4,000+ sq ft';
     btn.classList.add('active');
     showCustomMode();
@@ -991,6 +995,7 @@ function toggleOver4k() {
 function showCustomMode() {
   document.getElementById('custom-banner').classList.add('show');
   document.getElementById('price-panel').style.display = 'none';
+  document.getElementById('mob-breakdown-card').style.display = 'none';
   document.getElementById('mob-lbl').textContent = 'Large home?';
   document.getElementById('mob-price-wrap').style.display = 'none';
   document.getElementById('mob-sub').textContent = 'Request a custom quote';
@@ -1001,6 +1006,7 @@ function showCustomMode() {
 function hideCustomMode() {
   document.getElementById('custom-banner').classList.remove('show');
   document.getElementById('price-panel').style.display = '';
+  document.getElementById('mob-breakdown-card').style.display = '';
   document.getElementById('mob-lbl').textContent = 'Step 2 of 4';
   document.getElementById('mob-price-wrap').style.display = '';
   document.getElementById('mob-sub').textContent = 'Adjust options above';
@@ -1019,8 +1025,7 @@ function goCustomQuote() {
     'Square footage: 4,000+ sq ft',
     S.beds    ? `Bedrooms: ${S.beds}`        : null,
     S.baths   ? `Bathrooms: ${S.baths}`      : null,
-    S.kitchen ? `Kitchens: ${S.kitchen}`     : null,
-    S.living  ? `Living Rooms: ${S.living}`  : null,
+
     extraList ? `Extra rooms: ${extraList}`  : null,
     S.pets    ? `Pets: ${S.pets}`            : null,
     `Frequency: ${freqNames[S.freq]||''}`,
@@ -1078,18 +1083,18 @@ function setFreq(f) {
   S.freq = f;
   document.querySelectorAll('.freq-btn').forEach(b => b.classList.toggle('sel', b.dataset.f===f));
   document.getElementById('addons-title').textContent = f==='onetime' ? 'Visit add-ons' : 'First visit add-ons';
-  recalc();
+  triggerRecalc();
 }
 function setPkg(p) {
   S.pkg = p;
   document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('sel'));
   document.getElementById('pkg-'+p).classList.add('sel');
-  recalc();
+  triggerRecalc();
 }
 function toggleAddon(el) {
   el.classList.toggle('sel');
   S.addons = [...document.querySelectorAll('.addon-btn.sel')].reduce((s,b)=>s+parseInt(b.dataset.price),0);
-  recalc();
+  triggerRecalc();
 }
 
 // ── SCHEDULING ──
@@ -1138,11 +1143,11 @@ function selectDate(dateStr, el) {
 function isReady() { return S.sqftTouched && S.bedsTouched && S.sqft>0 && !S.isOver4k && S.sqft<=4000; }
 function calcPrice() {
   let base = 80;
-  base += S.beds*18; base += S.baths*14; base += S.kitchen*20; base += S.living*12;
+  base += S.beds*18; base += S.baths*14; base += S.halfBaths*8;
   base += S.pets*10;
   base += (S.levels - 1) * 15;
-  const extraCount = Object.values(S.extraRooms).reduce((a,b)=>a+b,0);
-  base += extraCount*12;
+  const extraPrices = {kitchen:20, living:12};
+  Object.entries(S.extraRooms).forEach(([k,v]) => { base += v * (extraPrices[k] || 12); });
   base += Math.round(S.sqft/500)*10;
   // Frequency multiplier gives the base clean price
   const freqMult = {weekly:0.78,biweekly:0.88,monthly:1,onetime:1.18}[S.freq]||1;
@@ -1153,6 +1158,19 @@ function calcPrice() {
   return {visitBase, firstVisitFee, total};
 }
 
+let recalcTimer = null;
+function triggerRecalc() {
+  const spinner = document.getElementById('pc-spinner');
+  const mobSpinner = document.getElementById('mob-spinner');
+  if (spinner) spinner.classList.add('show');
+  if (mobSpinner) mobSpinner.classList.add('show');
+  clearTimeout(recalcTimer);
+  recalcTimer = setTimeout(() => {
+    recalc();
+    if (spinner) spinner.classList.remove('show');
+    if (mobSpinner) mobSpinner.classList.remove('show');
+  }, 900);
+}
 function recalc() {
   if (S.isOver4k) return;
   if (!isReady()) {
@@ -1240,8 +1258,7 @@ function buildSummary() {
   document.getElementById('sum-cleaning-rows').innerHTML = [
     row('Bedrooms', S.beds || null),
     row('Bathrooms', S.baths || null),
-    row('Kitchen', S.kitchen || null),
-    row('Living Room', S.living || null),
+
     addonsSelected.length ? row('Extra rooms', addonsSelected.join(', ')) : '',
     S.pets ? row('Pets', S.pets) : '',
     row('Levels', S.levels),
